@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Violet Evergarden - Discord Music Bot</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --sky-blue: #00BFFF;
+            --deep-blue: #0080FF;
+            --light-blue: #87CEFA;
+            --dark-blue: #0a1120;
+            --darker-blue: #070b16;
+            --pink-accent: #FF015B;
+            --card-bg: rgba(15, 23, 42, 0.7);
+            --text-light: #e2e8f0;
+            --text-muted: #94a3b8;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--darker-blue), var(--dark-blue));
+            color: var(--text-light);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            scroll-behavior: smooth;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 10% 20%, rgba(0, 123, 255, 0.1) 0%, rgba(0, 0, 0, 0) 30%),
+                        radial-gradient(circle at 90% 80%, rgba(0, 191, 255, 0.1) 0%, rgba(0, 0, 0, 0) 30%);
+            z-index: -2;
+        }
+        
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .particle {
+            position: absolute;
+            background: rgba(0, 191, 255, 0.5);
+            border-radius: 50%;
+            opacity: 0.7;
+        }
+        
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1.5rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: rgba(10, 15, 31, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 191, 255, 0.1);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--text-light);
+            text-decoration: none;
+        }
+        
+        .logo i {
+            color: var(--sky-blue);
+            font-size: 1.8rem;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+        
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-links a:hover {
+            color: var(--sky-blue);
+        }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--sky-blue);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+        
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 0 5%;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .avatar-container {
+            position: relative;
+            width: 220px;
+            height: 220px;
+            margin: 0 auto 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .bigavatar {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            border: 3px solid var(--sky-blue);
+            box-shadow: 0 0 30px rgba(0, 191, 255, 0.5);
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 2;
+            object-fit: cover;
+            background: linear-gradient(135deg, var(--sky-blue), var(--deep-blue));
+        }
+        
+        .bigavatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 40px rgba(0, 191, 255, 0.8);
+        }
+        
+        .pulse-circle {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px solid rgba(0, 191, 255, 0.3);
+            animation: pulse 3s infinite;
+            z-index: 1;
+        }
+        
+        .pulse-circle:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+        
+        .pulse-circle:nth-child(3) {
+            animation-delay: 1s;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.6;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.3;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 0.6;
+            }
+        }
+        
+        .title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--sky-blue), var(--light-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            font-family: 'Montserrat', sans-serif;
+            letter-spacing: 1px;
+            text-shadow: 0 5px 15px rgba(0, 191, 255, 0.2);
+        }
+        
+        .undertitle {
+            font-size: 1.5rem;
+            color: var(--text-light);
+            max-width: 700px;
+            margin: 0 auto 2rem;
+            line-height: 1.6;
+            font-weight: 300;
+        }
+        
+        .highlight {
+            color: var(--sky-blue);
+            font-weight: 500;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 1.5rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .btn {
+            padding: 1rem 2.5rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            z-index: 2;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(90deg, var(--sky-blue), var(--deep-blue));
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid var(--sky-blue);
+            color: var(--sky-blue);
+        }
+        
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 191, 255, 0.4);
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(90deg, var(--deep-blue), var(--sky-blue));
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(0, 191, 255, 0.1);
+        }
+        
+        .features {
+            padding: 6rem 5%;
+            background: var(--darker-blue);
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 4rem;
+            position: relative;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: var(--sky-blue);
+            border-radius: 2px;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .feature-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 191, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(0, 191, 255, 0.2);
+            border-color: rgba(0, 191, 255, 0.3);
+        }
+        
+        .feature-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--sky-blue);
+        }
+        
+        .feature-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-light);
+        }
+        
+        .feature-desc {
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+        
+        .commands {
+            padding: 6rem 5%;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .commands-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .command-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 2rem;
+            border: 1px solid rgba(0, 191, 255, 0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .command-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(0, 191, 255, 0.3);
+        }
+        
+        .command-name {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            margin-bottom: 1.2rem;
+            color: var(--sky-blue);
+            font-size: 1.2rem;
+        }
+        
+        .command-name i {
+            font-size: 1.5rem;
+        }
+        
+        .command-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+        }
+        
+        .command-item {
+            background: rgba(0, 191, 255, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .command-item:hover {
+            background: var(--sky-blue);
+            transform: translateY(-3px);
+        }
+        
+        .stats {
+            padding: 6rem 5%;
+            background: var(--darker-blue);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 2.5rem;
+            text-align: center;
+            border: 1px solid rgba(0, 191, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(0, 191, 255, 0.3);
+        }
+        
+        .stat-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            color: var(--sky-blue);
+        }
+        
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(90deg, var(--sky-blue), var(--light-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .stat-title {
+            font-size: 1.2rem;
+            color: var(--text-light);
+        }
+        
+        .cta {
+            padding: 6rem 5%;
+            text-align: center;
+            position: relative;
+        }
+        
+        .cta-content {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 4rem;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 191, 255, 0.1);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cta-content::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0, 191, 255, 0.1) 0%, transparent 70%);
+            z-index: -1;
+            animation: rotate 20s linear infinite;
+        }
+        
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        .cta-title {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-light);
+        }
+        
+        .cta-desc {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            margin-bottom: 2.5rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        footer {
+            background: rgba(5, 10, 20, 0.9);
+            padding: 4rem 5% 2rem;
+            border-top: 1px solid rgba(0, 191, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            max-width: 1200px;
+            margin: 0 auto 3rem;
+        }
+        
+        .footer-column h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 0.8rem;
+            color: var(--sky-blue);
+        }
+        
+        .footer-column h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--sky-blue);
+            border-radius: 2px;
+        }
+        
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+        
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        
+        .footer-links a:hover {
+            color: var(--sky-blue);
+            transform: translateX(5px);
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1.2rem;
+            margin-top: 1.5rem;
+        }
+        
+        .social-links a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: rgba(0, 191, 255, 0.1);
+            color: var(--sky-blue);
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .social-links a:hover {
+            background: var(--sky-blue);
+            color: white;
+            transform: translateY(-5px);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-15px);
+            }
+            100% {
+                transform: translateY(0);
+            }
+        }
+        
+        .scroll-down {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--sky-blue);
+            font-size: 0.9rem;
+            animation: bounce 2s infinite;
+        }
+        
+        .scroll-down i {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0) translateX(-50%);
+            }
+            40% {
+                transform: translateY(-20px) translateX(-50%);
+            }
+            60% {
+                transform: translateY(-10px) translateX(-50%);
+            }
+        }
+        
+        /* Perbaikan untuk navigasi mobile */
+        .short-text {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .title {
+                font-size: 2.5rem;
+            }
+            
+            .undertitle {
+                font-size: 1.2rem;
+            }
+            
+            .btn {
+                padding: 0.8rem 1.8rem;
+                font-size: 1rem;
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .avatar-container {
+                width: 180px;
+                height: 180px;
+            }
+            
+            .bigavatar {
+                width: 160px;
+                height: 160px;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .feature-card, .command-card, .stat-card {
+                padding: 1.8rem;
+            }
+            
+            .cta-content {
+                padding: 2.5rem;
+            }
+            
+            .cta-title {
+                font-size: 2rem;
+            }
+            
+            .nav-links {
+                gap: 1.5rem;
+            }
+            
+            .nav-links a {
+                font-size: 0.9rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .title {
+                font-size: 2rem;
+            }
+            
+            .nav-links {
+                gap: 0.6rem;
+            }
+            
+            .nav-links a {
+                font-size: 0.8rem;
+            }
+            
+            .buttons {
+                gap: 1rem;
+            }
+            
+            .avatar-container {
+                width: 160px;
+                height: 160px;
+            }
+            
+            .bigavatar {
+                width: 140px;
+                height: 140px;
+            }
+            
+            .section-title {
+                font-size: 1.8rem;
+            }
+            
+            .cta-content {
+                padding: 1.8rem;
+            }
+            
+            .cta-title {
+                font-size: 1.8rem;
+            }
+            
+            /* Tampilkan versi pendek untuk mobile */
+            .full-text {
+                display: none;
+            }
+            
+            .short-text {
+                display: inline;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="particles" id="particles"></div>
+    
+    <nav>
+        <a href="#" class="logo">
+            <i class="fas fa-music"></i>
+            Violet Evergarden
+        </a>
+        <div class="nav-links">
+            <a href="#features">Features</a>
+            <a href="#commands">Commands</a>
+            <a href="#stats">
+                <span class="full-text">Statistics</span>
+                <span class="short-text">Stats</span>
+            </a>
+        </div>
+    </nav>
+    
+    <section class="hero">
+    <div class="avatar-container">
+        <div class="pulse-circle"></div>
+        <div class="pulse-circle"></div>
+        <div class="pulse-circle"></div>
+        <a href="https://discord.com/oauth2/authorize?client_id=1215944876936527922&permissions=8&redirect_uri=https%3A%2F%2Fviobot.github.io%2F%3Finvited%3Dyes&response_type=code&scope=bot+applications.commands">
+            <div class="bigavatar" style="background-image: url('images/avatar.png'); background-size: cover; background-position: center;"></div>
+        </a>
+    </div>
+        <h1 class="title">Violet Evergarden</h1>
+        <p class="undertitle">A high-quality Discord music bot with crystal clear audio, advanced features,<br>and <span class="highlight">100% free since Violet born</span></p>
+        
+        <div class="buttons">
+            <a href="https://discord.com/oauth2/authorize?client_id=1215944876936527922&permissions=8&redirect_uri=https%3A%2F%2Fviobot.github.io%2F%3Finvited%3Dyes&response_type=code&scope=bot+applications.commands" class="btn btn-primary">
+                <i class="fas fa-robot"></i> Add to Discord
+            </a>
+            <a href="#features" class="btn btn-secondary">
+                <i class="fas fa-star"></i> Explore Features
+            </a>
+        </div>
+        
+        <div class="scroll-down">
+            <i class="fas fa-chevron-down"></i>
+            Scroll to explore
+        </div>
+    </section>
+    
+    <section class="features" id="features">
+        <h2 class="section-title">Amazing Features</h2>
+        
+        <div class="features-grid">
+            <div class="feature-card floating">
+                <div class="feature-icon">
+                    <i class="fas fa-music"></i>
+                </div>
+                <h3 class="feature-title">High Quality Audio</h3>
+                <p class="feature-desc">Experience crystal clear 320kbps audio streaming with no interruptions or quality loss.</p>
+            </div>
+            
+            <div class="feature-card floating" style="animation-delay: 0.2s">
+                <div class="feature-icon">
+                    <i class="fas fa-headphones"></i>
+                </div>
+                <h3 class="feature-title">24/7 Music Playback</h3>
+                <p class="feature-desc">Keep the music playing non-stop with our reliable 24/7 hosting and uptime.</p>
+            </div>
+            
+            <div class="feature-card floating" style="animation-delay: 0.4s">
+                <div class="feature-icon">
+                    <i class="fas fa-sliders-h"></i>
+                </div>
+                <h3 class="feature-title">Advanced Controls</h3>
+                <p class="feature-desc">Fine-tune your listening experience with bass boost, speed control, and equalizer settings.</p>
+            </div>
+            
+            <div class="feature-card floating" style="animation-delay: 0.6s">
+                <div class="feature-icon">
+                    <i class="fas fa-list-ol"></i>
+                </div>
+                <h3 class="feature-title">Playlist Support</h3>
+                <p class="feature-desc">Create, save, and manage playlists for your favorite music collections.</p>
+            </div>
+            
+            <div class="feature-card floating" style="animation-delay: 0.8s">
+                <div class="feature-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h3 class="feature-title">Multi-Platform Search</h3>
+                <p class="feature-desc">Search across YouTube, Spotify, SoundCloud, and more with a single command.</p>
+            </div>
+            
+            <div class="feature-card floating" style="animation-delay: 1s">
+                <div class="feature-icon">
+                    <i class="fas fa-gem"></i>
+                </div>
+                <h3 class="feature-title">Premium Experience</h3>
+                <p class="feature-desc">All features available for free with no paywalls or premium subscriptions.</p>
+            </div>
+        </div>
+    </section>
+    
+    <section class="commands" id="commands">
+        <h2 class="section-title">Essential Commands</h2>
+        
+        <div class="commands-grid">
+            <div class="command-card">
+                <div class="command-name">
+                    <i class="fas fa-play"></i>
+                    <span>Music Controls</span>
+                </div>
+                <div class="command-list">
+                    <div class="command-item">/play</div>
+                    <div class="command-item">/queue</div>
+                    <div class="command-item">/skip</div>
+                    <div class="command-item">/stop</div>
+                    <div class="command-item">/seek</div>
+                    <div class="command-item">/jump</div>
+                </div>
+            </div>
+            
+            <div class="command-card">
+                <div class="command-name">
+                    <i class="fas fa-list"></i>
+                    <span>Playlist Management</span>
+                </div>
+                <div class="command-list">
+                    <div class="command-item">/playlist create</div>
+                    <div class="command-item">/playlist import</div>
+                    <div class="command-item">/playlist export</div>
+                    <div class="command-item">/playlist delete</div>
+                    <div class="command-item">/playlist add</div>
+                    <div class="command-item">/playlist play</div>
+                </div>
+            </div>
+            
+            <div class="command-card">
+                <div class="command-name">
+                    <i class="fas fa-cogs"></i>
+                    <span>Advanced Features</span>
+                </div>
+                <div class="command-list">
+                    <div class="command-item">/bassboost</div>
+                    <div class="command-item">/volume</div>
+                    <div class="command-item">/shuffle</div>
+                    <div class="command-item">/loop</div>
+                    <div class="command-item">/lyrics</div>
+                    <div class="command-item">/nowplaying</div>
+                </div>
+            </div>
+            
+            <div class="command-card">
+    <div class="command-name">
+        <i class="fas fa-infinity"></i>
+        <span>And Much More</span>
+    </div>
+    <div class="more-features-desc">
+        <p>Discover many more commands and features to enhance your music experience!</p>
+    </div>
+</div>
+    </section>
+    
+    <section class="stats" id="stats">
+        <h2 class="section-title">Bot Statistics</h2>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-server"></i>
+                </div>
+                <div class="stat-number" id="serverCount">750+</div>
+                <div class="stat-title">Active Servers</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-number" id="userCount">25,000+</div>
+                <div class="stat-title">Happy Users</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-music"></i>
+                </div>
+                <div class="stat-number" id="songCount">500,000+</div>
+                <div class="stat-title">Songs Played</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-number">99.9%</div>
+                <div class="stat-title">Uptime</div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="cta">
+        <div class="cta-content">
+            <h2 class="cta-title">Ready to enhance your Discord experience?</h2>
+            <p class="cta-desc">Join thousands of servers enjoying crystal clear music with Violet Evergarden. 100% free with no limitations.</p>
+            <a href="https://discord.com/oauth2/authorize?client_id=1215944876936527922&permissions=8&redirect_uri=https%3A%2F%2Fviobot.github.io%2F%3Finvited%3Dyes&response_type=code&scope=bot+applications.commands" class="btn btn-primary">
+                <i class="fas fa-robot"></i> Add to Discord Now
+            </a>
+        </div>
+    </section>
+    
+    <footer>
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>Violet Evergarden</h3>
+                <p>A high-quality Discord music bot focused on delivering the best audio experience with advanced features and 100% free access.</p>
+                <div class="social-links">
+                    <a href="https://github.com/DreamLikeAmonster" target="_blank">
+                        <i class="fab fa-github"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Quick Links</h3>
+                <div class="footer-links">
+                    <a href="#features">
+                        <i class="fas fa-chevron-right"></i> Features
+                    </a>
+                    <a href="#commands">
+                        <i class="fas fa-chevron-right"></i> Commands
+                    </a>
+                    <a href="#stats">
+                        <i class="fas fa-chevron-right"></i> Statistics
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            &copy; 2023 Violet Evergarden Bot. All rights reserved. Designed with ❤️ by DreamLikeAmonster
+        </div>
+    </footer>
+    
+    <script>
+        function initParticles() {
+            const container = document.getElementById('particles');
+            const particleCount = 100;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                const size = Math.random() * 5 + 1;
+                const posX = Math.random() * 100;
+                const posY = Math.random() * 100;
+                const animationDuration = Math.random() * 20 + 10;
+                const animationDelay = Math.random() * 5;
+                
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${posX}%`;
+                particle.style.top = `${posY}%`;
+                particle.style.animation = `float ${animationDuration}s ease-in-out ${animationDelay}s infinite`;
+                particle.style.opacity = Math.random() * 0.5 + 0.2;
+                
+                container.appendChild(particle);
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            initParticles();
+            
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        window.scrollTo({
+                            top: target.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+            
+            if (window.location.search.includes("invited=yes")) {
+                const alert = document.createElement('div');
+                alert.style.position = 'fixed';
+                alert.style.top = '20px';
+                alert.style.right = '20px';
+                alert.style.padding = '20px';
+                alert.style.background = 'rgba(10, 15, 31, 0.9)';
+                alert.style.borderLeft = '4px solid var(--sky-blue)';
+                alert.style.borderRadius = '8px';
+                alert.style.color = 'white';
+                alert.style.zIndex = '1000';
+                alert.style.backdropFilter = 'blur(10px)';
+                alert.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.3)';
+                alert.style.display = 'flex';
+                alert.style.alignItems = 'center';
+                alert.style.gap = '15px';
+                alert.style.transform = 'translateX(110%)';
+                alert.style.transition = 'transform 0.5s ease';
+                
+                alert.innerHTML = `
+                    <i class="fas fa-check-circle" style="font-size: 24px; color: var(--sky-blue);"></i>
+                    <div>
+                        <h3 style="margin-bottom: 5px;">Success!</h3>
+                        <p>Violet has been added to your server!</p>
+                    </div>
+                `;
+                
+                document.body.appendChild(alert);
+                
+                setTimeout(() => {
+                    alert.style.transform = 'translateX(0)';
+                }, 100);
+                
+                setTimeout(() => {
+                    alert.style.transform = 'translateX(110%)';
+                    setTimeout(() => {
+                        document.body.removeChild(alert);
+                    }, 500);
+                }, 5000);
+                
+                const cleanURL = window.location.origin + window.location.pathname;
+                window.history.replaceState({}, document.title, cleanURL);
+            }
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        animateValue('serverCount', 0, 750, 2000);
+                        animateValue('userCount', 0, 25000, 2000);
+                        animateValue('songCount', 0, 500000, 2000);
+                        observer.disconnect();
+                    }
+                });
+            }, { threshold: 0.5 });
+            
+            observer.observe(document.querySelector('.stats'));
+        });
+        
+        function animateValue(id, start, end, duration) {
+            const element = document.getElementById(id);
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const value = Math.floor(progress * (end - start) + start);
+                element.textContent = value.toLocaleString() + "+";
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+    </script>
+</body>
+</html>
